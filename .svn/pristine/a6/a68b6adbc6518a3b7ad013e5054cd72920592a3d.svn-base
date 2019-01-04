@@ -1,0 +1,25 @@
+package com.albertyy.crm.serviceImpl;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import com.albertyy.crm.dao.CustomerDao;
+import com.albertyy.crm.entity.Customer;
+import com.albertyy.crm.service.CustomerService;
+/*
+ * 客户管理业务层实现类
+ */
+@Transactional
+public class CustomerServiceImpl implements CustomerService {
+    //注入Dao
+	private CustomerDao customerDao;
+
+	public void setCustomerDao(CustomerDao customerDao) {
+		this.customerDao = customerDao;
+	}
+    //保存客户
+	@Override
+	public void save(Customer customer) {
+		customerDao.save(customer);
+	}
+	
+}

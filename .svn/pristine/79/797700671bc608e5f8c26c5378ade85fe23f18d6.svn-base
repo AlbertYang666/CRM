@@ -1,0 +1,52 @@
+/**  
+ 
+* @Title: UserServiceImpl.java
+ 
+* @Package com.albertyy.crm.serviceImpl
+ 
+* @Description: TODO
+ 
+* @author yangxianyang  
+ 
+* @date 2018年12月13日 上午11:40:55
+ 
+* @version V1.0  
+ 
+*/
+
+package com.albertyy.crm.serviceImpl;
+
+
+
+import org.springframework.transaction.annotation.Transactional;
+
+import com.albertyy.crm.dao.UserDao;
+import com.albertyy.crm.entity.User;
+import com.albertyy.crm.service.UserService;
+import com.albertyy.crm.utils.MD5Utils;
+
+/**
+ *        项目名称：CRM   类名称：UserServiceImpl   类描述：   创建人：yangyangyang  
+ * 创建时间：2018年12月13日 上午11:40:55   修改人：yangyangyang   修改时间：2018年12月13日
+ * 上午11:40:55   修改备注：   @version       
+ */
+@Transactional
+public class UserServiceImpl implements UserService {
+	// 注入Dao
+	private UserDao userDao;
+    public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+
+	// 注册方法
+	@Override
+	public void register(User user) {
+		// 对密码进行加密处理
+		user.setUser_password(MD5Utils.md5(user.getUser_password()));
+		// '1:正常,0:暂停'
+		user.setUser_state("1");
+		// 调用Dao
+		userDao.save(user);
+	}
+
+}

@@ -1,0 +1,155 @@
+/**  
+ 
+* @Title: CustomerAction.java
+ 
+* @Package com.albertyy.crm.web.action
+ 
+* @Description: TODO
+ 
+* @author yangxianyang  
+ 
+* @date 2018年12月16日 下午4:07:41
+ 
+* @version V1.0  
+ 
+*/
+
+package com.albertyy.crm.web.action;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.servlet.ServletContext;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.struts2.ServletActionContext;
+import org.hibernate.criterion.DetachedCriteria;
+
+import com.albertyy.crm.entity.Customer;
+import com.albertyy.crm.service.CustomerService;
+import com.albertyy.crm.utils.PageBean;
+import com.albertyy.crm.utils.UploadUtils;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ *        项目名称：CRM   类名称：CustomerAction   类描述：  客户管理Action 创建人：yangyangyang  
+ * 创建时间：2018年12月16日 下午4:07:41   修改人：yangyangyang   修改时间：2018年12月16日 下午4:07:41  
+ * 修改备注：   @version       
+ */
+
+public class CustomerAction extends ActionSupport implements ModelDriven<Customer> {
+	// 模型驱动使用的对象
+	private Customer customer = new Customer();
+
+	@Override
+	public Customer getModel() {
+		// TODO Auto-generated method stub
+		return customer;
+	}
+
+	// 接收分页参数
+	private Integer page = 1;
+
+	public void setPage(Integer page) {
+		if (page == null) {
+			page = 1;
+		}
+		this.page = page;
+	}
+
+	private Integer pageSize = 5;
+
+	public void setPageSize(Integer pageSize) {
+		if (pageSize == null) {
+			pageSize = 5;
+		}
+		this.pageSize = pageSize;
+	}
+
+	// 注入Services
+	private CustomerService customerService;
+
+	public void setCustomerService(CustomerService customerService) {
+		this.customerService = customerService;
+	}
+    /*
+     * 文件上传提供的三个属性
+     */
+	private String fileFileName;//文件名称
+	private File file;//上传的文件
+	private String fileContentType;//文件类型
+	public void setFileFileName(String fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public void setFileContentType(String fileContentType) {
+		this.fileContentType = fileContentType;
+	}
+
+	// 客户管理跳转到添加页面
+	public String saveUI() {
+		return "saveUI";
+	}
+
+	// 保存客户的方法
+	public String save() {
+		//上传文件
+		if(file!=null){
+			//设置上传路径
+			String directory="/upload";
+			String path=ServletActionContext.getServletContext().getRealPath(directory);
+			
+			//System.out.println(file);
+			//为了防止一个目录下存放相同的文件名：使用随机文件名
+			String uuidFileName=UploadUtils.getUuidFileName(fileFileName);
+			//为了防止一个目录下存放的文件过多：目录分离
+			String realPath=UploadUtils.getPath(uuidFileName);
+			//创建目录
+			String url=path+realPath;
+			File ml=new File(url);
+			if(!ml.exists()){
+				ml.mkdirs();
+			}
+			//文件上传
+			File dictFile=new File(url+"/"+uuidFileName);
+			try {
+				FileUtils.copyFile(file, dictFile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//设置image的值
+			customer.setCust_image(url+"/"+uuidFileName);
+		}
+		
+		//保存客户
+		customerService.save(customer);
+		// 跳转到查询页面
+		// 接收分页参数
+		// 最好使用DetachedCriteria对象(带分页的条件查询)
+		DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Customer.class);
+		// 调用业务层查询
+		PageBean<Customer> pageBean = customerService.findByPage(detachedCriteria, page, pageSize);
+		ActionContext.getContext().getValueStack().push(pageBean);
+
+		return "findAll";
+	}
+
+	// 查询客户列表方法
+	public String findAll() {
+		// 接收分页参数
+		// 最好使用DetachedCriteria对象(带分页的条件查询)
+		DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Customer.class);
+		// 调用业务层查询
+		PageBean<Customer> pageBean = customerService.findByPage(detachedCriteria, page, pageSize);
+		ActionContext.getContext().getValueStack().push(pageBean);
+
+		return "findAll";
+	}
+}

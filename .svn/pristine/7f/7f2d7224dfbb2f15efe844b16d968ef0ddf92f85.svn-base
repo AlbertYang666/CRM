@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 配置Struts2的常量 -->
+	<constant name="struts.action.extension" value="action"/>
+	
+	<!-- 配置Action -->
+	<package name="crm" extends="struts-default" namespace="/">
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="login" >/login.jsp</result>
+			<result name="success" type="redirect">/index.jsp</result>
+		</action>
+		
+		<!-- 客户管理Action -->
+		<action name="customer_*" class="customerAction" method="{1}">
+			<result name="saveUI" >/customer/add.jsp</result>
+		</action>
+		
+		<!-- 字典管理Action -->
+		<action name="baseDict_*" class="baseDictAction" method="{1}">
+			
+		</action>
+	</package>
+</struts>

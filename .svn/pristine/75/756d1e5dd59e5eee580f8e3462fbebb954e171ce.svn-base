@@ -1,0 +1,83 @@
+/**  
+ 
+* @Title: LinkManAction.java
+ 
+* @Package com.albertyy.crm.web.action
+ 
+* @Description: TODO
+ 
+* @author yangxianyang  
+ 
+* @date 2018年12月19日 下午5:29:26
+ 
+* @version V1.0  
+ 
+*/
+
+package com.albertyy.crm.web.action;
+
+import org.hibernate.criterion.DetachedCriteria;
+
+import com.albertyy.crm.entity.LinkMan;
+import com.albertyy.crm.service.LinkManService;
+import com.albertyy.crm.utils.PageBean;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**  
+*   
+* 项目名称：CRM  
+* 类名称：LinkManAction  
+* 类描述：  联系人管理Action
+* 创建人：yangyangyang  
+* 创建时间：2018年12月19日 下午5:29:26  
+* 修改人：yangyangyang  
+* 修改时间：2018年12月19日 下午5:29:26  
+* 修改备注：  
+* @version   
+*   
+*/
+
+public class LinkManAction extends ActionSupport implements ModelDriven<LinkMan> {
+    //模型驱动对象
+	LinkMan linkMan=new LinkMan();
+	@Override
+	public LinkMan getModel() {
+		return linkMan;
+	}
+	//注入Service
+	private LinkManService linkManService;
+	public void setLinkManService(LinkManService linkManService) {
+		this.linkManService = linkManService;
+	}
+    
+	//接收当前页数和每页显示记录数
+	private Integer page=1;
+	private Integer pageSize=5;
+	public void setPage(Integer page) {
+		if(page==null){
+			page=1;
+		}
+		this.page = page;
+	}
+	public void setPageSize(Integer pageSize) {
+		if(pageSize==null){
+			pageSize=5;
+		}
+		this.pageSize = pageSize;
+	}
+	
+	
+	//查询所有联系人的方法
+	public String findAll(){
+		DetachedCriteria detachedCriteria=DetachedCriteria.forClass(LinkMan.class);
+		//设置条件
+		
+		//调用业务层查询
+		PageBean<LinkMan> pageBean=linkManService.findByPage(detachedCriteria,page,pageSize);
+		ActionContext.getContext().getValueStack().push(pageBean);
+		
+		return "findAll";
+	}
+}

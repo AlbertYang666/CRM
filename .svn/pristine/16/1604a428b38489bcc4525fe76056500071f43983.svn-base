@@ -1,0 +1,62 @@
+/**  
+ 
+* @Title: CustomerAction.java
+ 
+* @Package com.albertyy.crm.web.action
+ 
+* @Description: TODO
+ 
+* @author yangxianyang  
+ 
+* @date 2018年12月16日 下午4:07:41
+ 
+* @version V1.0  
+ 
+*/
+
+package com.albertyy.crm.web.action;
+
+import com.albertyy.crm.entity.Customer;
+import com.albertyy.crm.service.CustomerService;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**  
+*   
+* 项目名称：CRM  
+* 类名称：CustomerAction  
+* 类描述：  客户管理Action
+* 创建人：yangyangyang  
+* 创建时间：2018年12月16日 下午4:07:41  
+* 修改人：yangyangyang  
+* 修改时间：2018年12月16日 下午4:07:41  
+* 修改备注：  
+* @version   
+*   
+*/
+
+public class CustomerAction extends ActionSupport implements ModelDriven<Customer> {
+    //模型驱动使用的对象
+	private Customer customer=new Customer();
+	@Override
+	public Customer getModel() {
+		// TODO Auto-generated method stub
+		return customer;
+	}
+	//注入Services
+	private CustomerService customerService;
+	public void setCustomerService(CustomerService customerService) {
+		this.customerService = customerService;
+	}
+    
+	//客户管理跳转到添加页面
+	public String saveUI(){
+		return "saveUI";
+	}
+	
+	//保存客户的方法
+	public String save(){
+		customerService.save(customer);
+		return NONE;
+	}
+}

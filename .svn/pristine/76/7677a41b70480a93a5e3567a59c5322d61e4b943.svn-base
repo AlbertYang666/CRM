@@ -1,0 +1,70 @@
+/**  
+ 
+* @Title: CustomerDaoImpl.java
+ 
+* @Package com.albertyy.crm.daoImpl
+ 
+* @Description: TODO
+ 
+* @author yangxianyang  
+ 
+* @date 2018年12月16日 下午4:18:24
+ 
+* @version V1.0  
+ 
+*/
+
+package com.albertyy.crm.daoImpl;
+
+import java.util.List;
+
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
+
+import com.albertyy.crm.dao.CustomerDao;
+import com.albertyy.crm.entity.Customer;
+import com.albertyy.crm.entity.User;
+
+/**
+ *        项目名称：CRM   类名称：CustomerDaoImpl   类描述：客户管理Dao实现类   创建人：yangyangyang  
+ * 创建时间：2018年12月16日 下午4:18:24   修改人：yangyangyang   修改时间：2018年12月16日 下午4:18:24  
+ * 修改备注：   @version       
+ */
+
+public class CustomerDaoImpl extends HibernateDaoSupport implements CustomerDao {
+	// 保存客户
+	@Override
+	public void save(Customer customer) {
+		this.getHibernateTemplate().save(customer);
+	}
+
+	// 带条件统计个数
+	@Override
+	public Integer findCount(DetachedCriteria detachedCriteria) {
+		detachedCriteria.setProjection(Projections.rowCount());
+		List<Long> count=(List<Long>) this.getHibernateTemplate().findByCriteria(detachedCriteria);
+		if(count.size()>0){
+			return count.get(0).intValue();
+		}
+		return null;
+	}
+
+	// 带条件分页查询客户
+	@Override
+	public List<Customer> findByPage(DetachedCriteria detachedCriteria, Integer begin, Integer pageSize) {
+		detachedCriteria.setProjection(null);
+		
+		return (List<Customer>) this.getHibernateTemplate().findByCriteria(detachedCriteria, begin, pageSize);
+	}
+    //根据id查询
+	@Override
+	public Customer findById(Long cust_id) {
+		return this.getHibernateTemplate().get(Customer.class,cust_id);
+	}
+    //删除客户
+	@Override
+	public void delete(Customer customer) {
+		this.getHibernateTemplate().delete(customer);
+	}
+}

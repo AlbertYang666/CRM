@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+	<!-- 配置Struts2的常量 -->
+	<constant name="struts.action.extension" value="action" />
+	<!-- 配置Struts2中一个表单中上传文件总大小10M -->
+	<constant name="struts.multipart.maxSize" value="10485760"></constant>
+
+
+
+	<!-- 配置Action -->
+	<package name="crm" extends="struts-default" namespace="/">
+		<!-- 定义拦截器 -->
+		<interceptors>
+			<interceptor name="privilegeInterceptor"
+				class="com.albertyy.crm.web.intercept.PrivilegeInterceptor"></interceptor>
+		</interceptors>
+		<!-- 全局结果 -->
+		<global-results>
+			<result name="login">/login.jsp</result>
+		</global-results>
+		<!-- 验证码action -->
+		<action name="SecurityCodeImageAction" class="com.albertyy.crm.web.action.SecurityCodeImageAction">
+			<result name="success" type="stream">
+				<param name="contentType">image/jpeg</param>
+				<param name="inputName">imageStream</param>
+				<param name="bufferSize">2048</param>
+			</result>
+		</action>
+		<!-- 用户 -->
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="exitSuccess">/login.jsp</result>
+			<result name="success" type="redirect">/index.jsp</result>
+			<result name="register" >/register.jsp</result>
+		</action>
+
+		<!-- 客户管理Action -->
+		<action name="customer_*" class="customerAction" method="{1}">
+			<result name="saveUI">/customer/add.jsp</result>
+			<result name="findAll">/customer/list.jsp</result>
+			<result name="deleteSuccess" type="redirect">/customer_findAll.action
+			</result>
+			<result name="updateSuccess" type="redirect">/customer_findAll.action
+			</result>
+			<result name="input">/customer/add.jsp</result>
+
+			<interceptor-ref name="privilegeInterceptor"></interceptor-ref>
+			<!-- 配置文件上传拦截器 -->
+			<interceptor-ref name="defaultStack">
+				<param name="fileUpload.maximumSize">5242880</param>
+				<param name="fileUpload.allowedExtensions">.jpg,.bmp,.png,.txt,.gif</param>
+			</interceptor-ref>
+		</action>
+
+		<!-- 字典管理Action -->
+		<action name="baseDict_*" class="baseDictAction" method="{1}">
+
+			<interceptor-ref name="privilegeInterceptor"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<!-- 联系人管理Action -->
+		<action name="linkMan_*" class="linkManAction" method="{1}">
+			<result name="findAll">/linkman/list.jsp</result>
+			<result name="saveUI">/linkman/add.jsp</result>
+			<result name="saveSuccess">/linkman/list.jsp</result>
+			<result name="deleteSuccess">/linkman/list.jsp</result>
+			<result name="updateSuccess" type="redirect">/linkMan_findAll.action
+			</result>
+
+			<interceptor-ref name="privilegeInterceptor"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<!-- 客户拜访Action -->
+		<action name="saleVisit_*" class="saleVisitAction" method="{1}">
+			<result name="findAll">/salevisit/list.jsp</result>
+			<result name="saveUI">/salevisit/add.jsp</result>
+			<result name="saveSuccess">/salevisit/list.jsp</result>
+			<interceptor-ref name="privilegeInterceptor"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+	</package>
+</struts>
